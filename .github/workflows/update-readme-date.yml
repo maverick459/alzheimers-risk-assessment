@@ -26,5 +26,5 @@ jobs:
           else
             git commit -m "Update README date"
             git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/maverick459/alzheimers-risk-assessment.git
-            git push origin main
+            git push origin master
           fi
