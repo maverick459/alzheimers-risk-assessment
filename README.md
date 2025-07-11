@@ -154,7 +154,6 @@ The application uses a weighted scoring system based on medical research:
 
 ## Security Features
 
-- Session-based data storage (no permanent database)
 - Form validation on client and server side
 - CSRF protection
 - Secure session management
