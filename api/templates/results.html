@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="card-title mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>
+                    Your Alzheimer's Risk Assessment Results
+                </h2>
+            </div>
+            <div class="card-body">
+                <!-- Overall Risk Score -->
+                <div class="text-center mb-4">
+                    <h3>Overall Risk Score</h3>
+                    <div class="display-3 mb-2 risk-{{ risk_result.get('risk_level', 'unknown').lower() }}">
+                        {{ risk_result.get('total_score', 0) }}/100
+                    </div>
+                    <span class="badge bg-{% if risk_result.get('risk_level') == 'Low' %}success{% elif risk_result.get('risk_level') == 'Moderate' %}warning{% else %}danger{% endif %} fs-5">
+                        {{ risk_result.get('risk_level', 'Unknown') }} Risk
+                    </span>
+                </div>
+
+                <!-- Risk Factor Breakdown Chart -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5>Risk Factor Breakdown</h5>
+                        <div style="position: relative; height: 300px; width: 100%;">
+                            <canvas id="riskChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Factor Details</h5>
+                        <div class="list-group">
+                            {% if risk_result.get('factor_breakdown') %}
+                                {% for factor, score in risk_result.factor_breakdown.items() %}
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ factor.replace('_', ' ').title() }}
+                                    <span class="badge bg-primary rounded-pill">{{ "%.1f"|format(score) }} pts</span>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="list-group-item">No factor breakdown available</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Recommendations -->
+                <div class="alert alert-info">
+                    <h5><i class="fas fa-robot me-2"></i>Personalized Recommendations</h5>
+                    <p class="mb-0">{{ ai_explanation }}</p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="text-center mb-4">
+                    <a href="{{ url_for('export_summary') }}" class="btn btn-success me-2">
+                        <i class="fas fa-download me-2"></i>Export Text Summary
+                    </a>
+                    <button class="btn btn-danger me-2" onclick="generatePDF()">
+                        <i class="fas fa-file-pdf me-2"></i>Export PDF
+                    </button>
+                    <a href="{{ url_for('assessment') }}" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-redo me-2"></i>Retake Assessment
+                    </a>
+                    <button class="btn btn-outline-secondary" onclick="window.print()">
+                        <i class="fas fa-print me-2"></i>Print Results
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle me-2"></i>Important Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <strong>Disclaimer:</strong> This assessment is for educational purposes only and should not be used as a substitute for professional medical advice, diagnosis, or treatment. Please consult with your healthcare provider to discuss these results and develop an appropriate care plan.
+                </div>
+
+                <h6>General Cognitive Health Tips:</h6>
+                <ul>
+                    <li>Engage in regular physical exercise (aim for 150 minutes per week)</li>
+                    <li>Follow a Mediterranean-style diet rich in omega-3 fatty acids</li>
+                    <li>Stay mentally active with puzzles, reading, or learning new skills</li>
+                    <li>Maintain strong social connections</li>
+                    <li>Get quality sleep (7-9 hours per night)</li>
+                    <li>Manage stress through relaxation techniques</li>
+                    <li>Attend regular medical check-ups</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- jsPDF for PDF generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('riskChart');
+    if (!ctx) {
+        console.error('Chart canvas not found');
+        return;
+    }
+
+    const factorData = {{ risk_result.get('factor_breakdown', {}) | tojson | safe }};
+
+    if (!factorData || Object.keys(factorData).length === 0) {
+        ctx.parentElement.innerHTML = '<p class="text-center">No chart data available</p>';
+        return;
+    }
+
+    const labels = Object.keys(factorData).map(key => key.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()));
+    const data = Object.values(factorData);
+
+    try {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: [
+                        '#FF6384',
+                        '#36A2EB',
+                        '#FFCE56',
+                        '#4BC0C0',
+                        '#9966FF',
+                        '#FF9F40'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            usePointStyle: true,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed.toFixed(1) + ' points';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error creating chart:', error);
+        ctx.parentElement.innerHTML = '<p class="text-center text-danger">Error loading chart</p>';
+    }
+});
+
+function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Title
+    doc.setFontSize(20);
+    doc.text("Alzheimer's Risk Assessment Report", 20, 20);
+
+    // Date
+    doc.setFontSize(12);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 35);
+
+    // Risk Score
+    doc.setFontSize(16);
+    doc.text("Overall Risk Score", 20, 55);
+    doc.setFontSize(14);
+    doc.text(`Score: {{ risk_result.get('total_score', 0) }}/100`, 20, 70);
+    doc.text(`Risk Level: {{ risk_result.get('risk_level', 'Unknown') }}`, 20, 85);
+
+    // Risk Factors
+    doc.setFontSize(16);
+    doc.text("Risk Factor Breakdown", 20, 110);
+    doc.setFontSize(12);
+
+    let yPos = 125;
+    {% if risk_result.get('factor_breakdown') %}
+        {% for factor, score in risk_result.factor_breakdown.items() %}
+            doc.text("{{ factor.replace('_', ' ').title() }}: {{ "%.1f"|format(score) }} points", 25, yPos);
+            yPos += 15;
+        {% endfor %}
+    {% endif %}
+
+    // AI Recommendations
+    yPos += 10;
+    doc.setFontSize(16);
+    doc.text("AI Recommendations", 20, yPos);
+    yPos += 15;
+    doc.setFontSize(12);
+
+    const recommendations = `{{ ai_explanation }}`;
+    const splitRecommendations = doc.splitTextToSize(recommendations, 170);
+    doc.text(splitRecommendations, 20, yPos);
+
+    // Save the PDF
+    doc.save('alzheimer_risk_assessment.pdf');
+}
+</script>
+{% endblock %}

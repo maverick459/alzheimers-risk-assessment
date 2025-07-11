@@ -1,0 +1,48 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card text-center">
+            <div class="card-body p-5">
+                <i class="fa-brands fa-medrt fa-8x text-primary"></i>
+                <h1 class="card-title h2 mb-4">Alzheimer's Risk Assessment</h1>
+                <p class="card-text lead mb-4">
+                    Get a comprehensive evaluation of your Alzheimer's disease risk through our evidence-based assessment tool.
+                    This assessment analyzes demographic, lifestyle, and medical factors to provide personalized insights.
+                </p>
+                
+                <div class="row text-start mb-4">
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-check-circle text-success me-2"></i>What We Assess</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-user me-2"></i>Demographics</li>
+                            <li><i class="fas fa-heart me-2"></i>Lifestyle Factors</li>
+                            <li><i class="fas fa-notes-medical me-2"></i>Medical History</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-chart-line text-primary me-2"></i>You'll Receive</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-calculator me-2"></i>Risk Score & Level</li>
+                            <li><i class="fas fa-lightbulb me-2"></i>AI-Generated Tips</li>
+                            <li><i class="fas fa-download me-2"></i>Exportable Summary</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Note:</strong> This assessment is for educational purposes only and should not replace professional medical advice.
+                    Please consult with your healthcare provider for personalized guidance.
+                </div>
+
+                <a href="{{ url_for('assessment') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-play me-2"></i>Start Assessment
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
