@@ -82,14 +82,16 @@ A comprehensive Flask-based web application for evaluating Alzheimer's disease r
 ## File Structure Basic
 
 ```
-alzheimers-risk-app/
-├── templates/                        # HTML templates
-│   ├── admin_assessments.html        # Admin Assesments
-│   ├── assessment.html               # Assessment form
-│   ├── base.html                     # Base template
-│   ├── index.html                    # Home page
-│   └── results.html                  # Results page
-├── app.py                            # Main Flask application
+alzheimers-risk-assessment/
+├── api                               # API foler
+│   ├── templates                     # Admin Assesments
+│   |  ├── assessment.html            # Assessment form                         # 
+│   |  ├── admin_assessments.html     # Admin Assesments
+|   │  ├── assessment.html            # Assessment form
+|   │  ├── base.html                  # Base template
+|   │  ├── index.html                 # Home page
+|   │  └── results.html               # Results page
+│   ├── app.py                        # Main Flask application
 ├── crew_agents.py                    # Multi AI agents
 ├── database.py                       # Database
 ├── docker-compose.yml                # Docker Compose configuration
@@ -98,9 +100,9 @@ alzheimers-risk-app/
 ├── main.py                           # Application entry point
 ├── pyproject.toml                    # Configuration file
 ├── risk_calculator.py                # Risk assessment algorithm
-├── run_app.bat                       # Window run file
-├── run_app.sh                        # Shell run file
-├── setup.py                          # Setup file
+├── requirements                      # Dependencies
+├── vercel                            # Vercel deployment
+├── LICENSE.txt                       # License
 └──  README.md                        # This file
 ```
 
@@ -218,6 +220,6 @@ For technical issues or questions:
 ---
 
 **Version**: 1.0.0  
-**Last Updated**: {{ current_date }}
+**Last Updated**: July 11, 2025
 **Minimum Python Version**: 3.7
    
