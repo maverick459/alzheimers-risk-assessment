@@ -57,7 +57,7 @@ A comprehensive Flask-based web application for evaluating Alzheimer's disease r
 
 3. **Run the application**:
    ```bash
-   run_app.bat
+   python main.py
    ```
 
 4. **Access the application**:
@@ -85,7 +85,7 @@ A comprehensive Flask-based web application for evaluating Alzheimer's disease r
 alzheimers-risk-assessment/
 ├── api                               # API foler
 │   ├── templates                     # Admin Assesments
-│   |  ├── assessment.html            # Assessment form                         # 
+│   |  ├── assessment.html            # Assessment form
 │   |  ├── admin_assessments.html     # Admin Assesments
 |   │  ├── assessment.html            # Assessment form
 |   │  ├── base.html                  # Base template
